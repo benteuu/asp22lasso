@@ -1,0 +1,37 @@
+Package: asp22lasso
+Title: LASSO Regression based on Location-Scale Regression
+Version: 0.0.0.1
+Authors@R:
+    person("Emma", "Fössing", , "emma.foessing01@stud.uni-goettingen.de", role = c("aut", "cre"))
+    person("Lucas", "Mohrhagen", , "lucas.mohrhagen@stud.uni-goettingen.de", role = c("aut", "cre"))
+    person("Bent", "Rick", , "bentmathis.rick@stud.uni-goettingen.de", role = c("aut", "cre"))
+Description: `asp22lasso` is an R package which extends the existing [`lmls` package](https://github.com/hriebl/lmls)
+    with LASSO (Least Absolute Shrinkage and Selection Operator) regression. 
+    `lmls` is a multi-predictor regression with explanatory variables for the 
+    mean (= the location) and the standard deviation (= the scale) of a normally 
+    distributed response variable.
+    LASSO regression adds a penalty to these coefficients and shrinks them
+    towards or to zero. The optimal hyperparameter lambda, which controls the strength
+    of the LASSO penalty, is found via Cross-Validation.
+License: MIT + file LICENSE
+Depends: R (>= 3.5.0)
+Imports: 
+    broom,
+    dplyr,
+    generics,
+    glmnet,
+    pracma,
+    readr
+Suggests:
+    testthat (>= 3.0.0),
+    numDeriv,
+    ggplot2,
+    knitr,
+    mvtnorm,
+    rmarkdown,
+    lmls,
+    mgcv
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.0
+Config/testthat/edition: 3

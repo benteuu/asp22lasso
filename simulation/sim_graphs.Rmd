@@ -1,0 +1,128 @@
+---
+title: "sim_graphs"
+author: "Emma, Lucas, Bent"
+date: '2022-10-13'
+output: html_document
+---
+
+```{r setup, include=FALSE, echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+library(here)
+library(dplyr)
+library(ggplot2)
+library(knitr)
+
+```
+
+```{r read data, include=FALSE}
+res1<- readRDS(paste0(here(), "/simulation/res11.RData"))
+res2 <- readRDS(paste0(here(), "/simulation/res12.RData"))
+```
+
+
+
+# Graphs
+```{r graphs}
+visualitation <- function(results){
+  
+  # bias graph
+  df_bias <- cbind.data.frame(value = c(results[[1]][,1],results[[1]][,2],results[[1]][,3],results[[1]][,4]),
+                       model = c(rep("lasso", 16), rep("lmls", 16)),
+                       coeffs = c(rep(c(rep("location", 8), rep("scale", 8)), 2)),
+                       coeffname = c(rep(c("x1","x2","x3","x4","x5","x6","x7","x8"), 4)))
+  
+  bias <- ggplot(data= df_bias, aes(fill=model, y=value, x=coeffname, group=model))+
+    geom_bar(position="dodge", stat="identity") +
+    facet_grid(rows=vars(coeffs)) +
+    scale_fill_manual("Model",values = alpha(c("#66c2a5","#cE1B51"), .6)) + theme_minimal()+
+    #labs(title = "Bias in the models") +
+    theme(axis.line = element_blank(),            # disable axis lines
+          axis.title = element_blank(),           # disable axis titles
+          axis.text.x = element_text(hjust = 1, size=6),
+          strip.text = element_text(size = 12),
+          plot.title = element_text(size = 15),
+          panel.border = element_blank(),         # disable panel border
+          panel.grid.major.x = element_blank(),   # disable lines in grid on X-axis
+          panel.grid.minor.x = element_blank())  # disable lines in grid on X-axis
+  
+  
+  # sd graph
+  df_sd <- cbind.data.frame(value = c(results[[2]][,1],results[[2]][,2],results[[2]][,3],results[[2]][,4]),
+                       model = c(rep("lasso", 16), rep("lmls", 16)),
+                       coeffs = c(rep(c(rep("location", 8), rep("scale", 8)), 2)),
+                       coeffname = c(rep(c("x1","x2","x3","x4","x5","x6","x7","x8"), 4)))
+  
+  standard_dev <- ggplot(data= df_sd, aes(fill=model, y=value, x=coeffname, group=model))+
+    geom_bar(position="dodge", stat="identity") +
+    facet_grid(rows=vars(coeffs)) +
+    scale_fill_manual("Model",values = alpha(c("#66c2a5","#cE1B51"), .6)) + theme_minimal()+
+    #labs(title = "Standard deviation in the models") +
+    theme(axis.line = element_blank(),            # disable axis lines
+          axis.title = element_blank(),           # disable axis titles
+          axis.text.x = element_text(hjust = 1, size=6),
+          strip.text = element_text(size = 12),
+          plot.title = element_text(size = 15),
+          panel.border = element_blank(),         # disable panel border
+          panel.grid.major.x = element_blank(),   # disable lines in grid on X-axis
+          panel.grid.minor.x = element_blank())  # disable lines in grid on X-axis
+  
+  # average variance
+  df_variance <- cbind.data.frame(value = c(res1[[3]][,1],res1[[3]][,2],res1[[3]][,3],res1[[3]][,4]),
+                          model = c(rep("lasso", 2), rep("lmls", 2)),
+                          coeffs = c(rep(c("location", "scale"), 2)))
+  
+  avg_variance <- ggplot(data= df_variance, aes(fill=model, y=value, x=coeffs, group=model))+
+    geom_bar(position="dodge", stat="identity") +
+    scale_fill_manual("Model",values = alpha(c("#66c2a5","#cE1B51"), .6)) + theme_minimal()+
+    #labs(title = "average variance in the models") +
+    theme(axis.line = element_blank(),            # disable axis lines
+          axis.title = element_blank(),           # disable axis titles
+          axis.text.x = element_text(hjust = 1, size=6),
+          strip.text = element_text(size = 12),
+          plot.title = element_text(size = 15),
+          panel.border = element_blank(),         # disable panel border
+          panel.grid.major.x = element_blank(),   # disable lines in grid on X-axis
+          panel.grid.minor.x = element_blank())  # disable lines in grid on X-axis
+  
+  return(list(bias, standard_dev, avg_variance))
+}
+```
+
+```{r Results 1000}
+res1_visu <- visualitation(res1)
+res1_visu
+```
+```{r Results 5000}
+res2_visu <-visualitation(res2)
+res2_visu
+
+```
+# Datatable
+```{r datatable}
+
+results1 <- res1
+results2 <- res2
+
+location_table <- data.frame(true_beta = results1[[6]][1], 
+                                  lasso_1000 = results1[[4]][,1], 
+                                  lasso_5000 = results2[[4]][,1],
+                                  lmls_1000 = results1[[4]][,3], 
+                                  lmls_5000 = results2[[4]][,3])
+names(location_table)[1] <- "true_beta"
+location_table
+
+scale_table <- cbind.data.frame(true_gamma = results1[[6]][2], 
+                                lasso_1000 = results1[[4]][,2], 
+                                lasso_5000 = results2[[4]][,2],
+                                lmls_1000 = results1[[4]][,4], 
+                                lmls_5000 = results2[[4]][,4])
+scale_table
+names(scale_table)[1] <- "true_gamma"
+
+write.csv2(location_table, paste0(here(), "/simulation/location_table.csv"))
+write.csv2(scale_table, paste0(here(), "/simulation/scale_table.csv"))
+
+```
+
+

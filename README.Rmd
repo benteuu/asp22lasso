@@ -1,0 +1,78 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+
+library(ggplot2)
+
+theme_set(theme_bw(base_size = 11))
+
+theme_update(
+  legend.position = "none",
+  axis.text = element_text(color = "black", size = 11),
+  axis.title.x.bottom = element_text(margin = margin(t = 11)),
+  axis.title.y.left = element_text(margin = margin(r = 11))
+)
+
+```
+
+# asp22lasso
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+`asp22lasso` is an R package which extends the existing [`lmls` package](https://github.com/hriebl/lmls)
+with LASSO (Least Absolute Shrinkage and Selection Operator) regression. 
+`lmls` is a multi-predictor regression with explanatory variables for the 
+mean (= the location) and the standard deviation (= the scale) of a normally 
+distributed response variable.
+LASSO regression adds a penalty to these coefficients and shrinks them
+towards or to zero. The optimal hyperparameter lambda, which controls the strength
+of the LASSO penalty, is found via Cross-Validation.
+
+## Installation
+
+You can download the development version of asp22lasso by cloning the [gitlab 
+repository](https://gitlab.gwdg.de/asp22/asp22lasso) and then install the package
+with *devtools::install( )*. The function requires the file path to the downloaded
+package.
+
+## Example
+
+This is a basic example which shows you how to solve a common problem:
+
+This code simulates some basic data. 
+```{r sim data}
+library(asp22lasso)
+
+set.seed(1346)
+
+n <- 1000
+x1 <- runif(n)
+x2 <- runif(n)
+x3 <- runif(n)
+y <- rnorm(n, 0 + 1 * x1 + 1 * x3, exp(-3 + 1 * x2 + 1 * x3))
+```
+
+To estimate a LASSO-location-scale linear model, the function *lasso_lmls( )* is used. The input arguments location, scale and data are set with the generated data. Additional parameters are not modified for this example. It uses the default values (see the function's description for further input options).
+The function outputs the model refit on the full dataset with the optimal hyperparameters found by the cross-validation.
+<br>
+To view the regression output, the function *summary( )* is used.
+```{r example run}
+m_opt <- lasso_lmls(location = y ~ x1 + x3,
+                scale = ~ x2 + x3,
+                data = c(y, x1, x2, x3))
+
+summary(m_opt)
+
+```
+
